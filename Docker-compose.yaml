@@ -1,0 +1,74 @@
+version: '3.2'
+
+services:
+  nginx:
+    build:
+      context: ./docker/nginx
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/var/www
+    environment:
+      - "DB_PORT=5432"
+      - "DB_HOST=postgres"
+      - "XDG_CONFIG_HOME=/app"
+    ports:
+      - "8080:80"
+    depends_on:
+      - php-fpm
+
+  php-fpm:
+    build:
+      context: ./docker/php-fpm
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/var/www
+    environment:
+      - "DB_PORT=5432"
+      - "DB_HOST=postgres"
+      - "REDIS_PORT=6379"
+      - "REDIS_HOST=redis"
+    depends_on:
+      - postgres
+
+  php-cli:
+    build:
+      context: ./
+      dockerfile: docker/php-cli.docker
+    volumes:
+      - ./:/var/www
+    environment:
+      - "DB_PORT=5432"
+      - "DB_HOST=postgres"
+      - "COMPOSER_MEMORY_LIMIT=-1"
+    depends_on:
+      - postgres
+    tty: true
+
+  postgres:
+    image: postgres:latest
+    volumes:
+      - database:/var/lib/postgresql/data
+    environment:
+      - "POSTGRES_USER=user"
+      - "POSTGRES_PASSWORD=secret"
+      - "POSTGRES_DB=laravel"
+    ports:
+      - "5432:5432"
+
+  node:
+    image: node:18-alpine
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/var/www
+    working_dir: /var/www
+    tty: true
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8081:8080
+
+volumes:
+  database:
