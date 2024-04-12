@@ -17,6 +17,7 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+        // Get all roles
         $roles = Role::all();
 
         return view('profile.edit', [

@@ -24,7 +24,7 @@ class RoleController extends Controller
         
         return view('roles.index', [
             'roles' => $roles,
-            'currentRoleNames' => $currentRoleNames
+            'currentRoleNames' => $currentRoleNames,
         ]);
     }
     
@@ -37,7 +37,7 @@ class RoleController extends Controller
         // Fetch all permissions
         $permissions = Permission::all();
 
-        return view('roles.create', compact('permissions'));
+        return view('roles.create', ['permissions' => $permissions]);
     }
 
     /**
@@ -87,10 +87,10 @@ class RoleController extends Controller
         //prevent admin route access
         $role = Role::where('name', '!=', 'admin')->findOrFail($role->id);
 
-        return view('roles.edit', compact([
-            'permissions',
-            'role',
-        ]));
+        return view('roles.edit', [
+            'permissions' => $permissions,
+            'role' => $role,
+        ]);
     }
 
     /**
@@ -125,7 +125,7 @@ class RoleController extends Controller
         
         return view('roles.index', [
             'roles' => $roles,
-            'currentRoleNames' => $currentRoleNames
+            'currentRoleNames' => $currentRoleNames,
             ])
             ->with('alert', 'Role created success');
     }
@@ -139,6 +139,6 @@ class RoleController extends Controller
 
         $roles = Role::orderBy('name')->where('name', '!=', 'admin')->get();
 
-        return view('roles.index', compact(['roles']));
+        return view('roles.index', ['roles' => $roles]);
     }
 }

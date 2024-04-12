@@ -20,11 +20,12 @@ class ProductController extends Controller
     {
         $status = $request->input('status');
 
+        // use trait to get products with applied filter
         $products = $this->applyFilters($status);
 
         return view('products.index', [
             'products' => $products,
-            'status' => $status
+            'status' => $status,
         ]);
     }
     
@@ -46,12 +47,16 @@ class ProductController extends Controller
             'name' => 'required|string|min:10',
             'article' => 'required|string|unique:products,article',
             'status' => 'required|string|in:available,unavailable',
+            // attributes are not a required parameter;
+            // when filling out 1 of the inputs, the requirement is to fill out the second one
             'attribute_name.*' => 'nullable|string|required_with:attribute_value.*',
             'attribute_value.*' => 'nullable|string|required_with:attribute_name.*',   
         ]);
     
+        // get and check attributes from request  
         $attributes = $request->has('attribute_name') ? array_combine($validatedData['attribute_name'], $validatedData['attribute_value']) : [];
 
+        // additional check on empty value 
         $attributes = array_filter($attributes);
 
         $created = Product::create([
@@ -61,9 +66,10 @@ class ProductController extends Controller
             'attributes' => $attributes,
         ]);
 
-        // settings default recipient email adress from custom config file. 
+        // settings default recipient email adress from custom config file.
         $emailAdress = Config::get('products.email.default_email');
 
+        // send notification to transmitted email
         Notification::route('mail', $emailAdress)->notify(new SendProductCreatedMailNotification($created));
 
         return redirect()
@@ -76,6 +82,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
+        //get attributes array 
         $attributes = $product->attributes;
 
         return view('products.show', [
@@ -97,9 +104,9 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        
         $validatedData = $request->validate([
                 'name' => 'required|string|min:10',
+                // check unique article
                 'article' => 'required|string|unique:products,article,' . $product->id,
                 'status' => 'required|string|in:available,unavailable',
                 'attribute_name.*' => 'string|required_with:attribute_value.*',
@@ -131,6 +138,5 @@ class ProductController extends Controller
         return redirect()
             ->route('products.index')
             ->with('alert', 'Product deleted success');
-
     }
 }
