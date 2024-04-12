@@ -7,16 +7,21 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div>
+                @if( session('alert'))
+                    <div>
+                        {{ session('alert') }}
+                    </div>
+                @endif
+            </div>
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-
                 <div class="p-6 text-gray-900 text-2xl">
                     <x-primary-button class="ms-6">
-                        <a href="{{ url()->previous() }}">{{ __('Back') }}</a>
+                        <a href="{{ route('products.index') }}">{{ __('Back') }}</a>
                     </x-primary-button>
                 </div>
-
                 <div class="p-6 bg-white border-b border-gray-200">
-                    <p><strong>Name:</strong> {{ $product->name }}</p>
+                    <p class="text-xl"><strong>Name:</strong> {{ $product->name }}</p>
                     <p><strong>Article:</strong> {{ $product->article }}</p>
                     <p><strong>Status:</strong> {{ $product->status }}</p>
                     <br>
@@ -30,7 +35,7 @@
                     </ul>
                 </div>
 
-                <div class="py-4 flex gap-4">
+                <div class="p-6 flex gap-4">
 
                     
                     <x-primary-button>

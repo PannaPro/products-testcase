@@ -7,6 +7,13 @@
 
     <div class="py-12 mb-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div>
+                @if( session('alert'))
+                    <div>
+                        {{ session('alert') }}
+                    </div>
+                @endif
+            </div>
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 text-2xl flex justify-between items-center">
                     <span>{{ __('Choose status') }}</span>
@@ -16,8 +23,6 @@
                 </div>
 
                 <form action="{{ route('products.index') }}" method="GET">
-                    
-                    
                     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                         <div>
                             <input type="radio" id="all" name="status" value="" @if(!$status) checked @endif>
@@ -32,8 +37,7 @@
                             <label for="unavailable">Unavailable</label>
                         </div>
                         <x-primary-button class="mt-6">
-                            <a href="{{ route('products.index') }}">{{ __('Show') }}
-                            </a>
+                            Show
                         </x-primary-button>
                 </form>
 

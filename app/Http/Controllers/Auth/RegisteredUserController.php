@@ -42,6 +42,7 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        // laravel-permitions Spatie method. Assigns a user role
         $user->assignRole('manager');
 
         event(new Registered($user));

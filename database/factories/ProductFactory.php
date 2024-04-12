@@ -18,15 +18,15 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         $attributes = [
-            // 'color' => $this->faker->colorName,
-            // 'size' => $this->faker->randomElement(['S', 'M', 'L', 'XL']),
+            'color' => $this->faker->colorName,
+            'size' => $this->faker->randomElement(['S', 'M', 'L', 'XL']),
         ];
 
         return [
             'article' => Str::upper($this->faker->unique()->regexify('[A-Z0-9]{10}')),
             'name' => $this->faker->sentence(rand(3, 5)),
             'status' => $this->faker->randomElement(['available', 'unavailable']),
-            'attributes' => json_encode($attributes), // Serialization of attribute array to JSON.
+            'attributes' => $attributes,
             'created_at' => fake()->dateTimeBetween('-4 months', now()),
             'updated_at' => now(),
         ];

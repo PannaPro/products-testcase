@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
 use Carbon\Carbon;
+use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Notification;
 use App\Http\Controllers\Traits\ProductFilterTrait;
+use App\Notifications\SendProductCreatedMailNotification;
 
 class ProductController extends Controller
 {
@@ -16,6 +19,7 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $status = $request->input('status');
+
         $products = $this->applyFilters($status);
 
         return view('products.index', [
@@ -38,24 +42,33 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        // Проверяем, что данные валидны
         $validatedData = $request->validate([
             'name' => 'required|string|min:10',
             'article' => 'required|string|unique:products,article',
             'status' => 'required|string|in:available,unavailable',
-            'attribute_name.*' => 'string|required_with:attribute_value.*',
-            'attribute_value.*' => 'string|required_with:attribute_name.*',
+            'attribute_name.*' => 'nullable|string|required_with:attribute_value.*',
+            'attribute_value.*' => 'nullable|string|required_with:attribute_name.*',   
         ]);
     
-        // Создаем объект продукта и сохраняем его в базе данных
-        Product::create([
+        $attributes = $request->has('attribute_name') ? array_combine($validatedData['attribute_name'], $validatedData['attribute_value']) : [];
+
+        $attributes = array_filter($attributes);
+
+        $created = Product::create([
             'name' => $validatedData['name'],
             'article' => $validatedData['article'],
             'status' => $validatedData['status'],
-            'attributes' => array_combine($validatedData['attribute_name'], $validatedData['attribute_value']),
+            'attributes' => $attributes,
         ]);
 
-        return redirect()->route('products.index');
+        // settings default recipient email adress from custom config file. 
+        $emailAdress = Config::get('products.email.default_email');
+
+        Notification::route('mail', $emailAdress)->notify(new SendProductCreatedMailNotification($created));
+
+        return redirect()
+            ->route('products.index')
+            ->with('alert', 'Product created success');
     }
 
     /**
@@ -84,13 +97,7 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        // $validatedData = $request->validate([
-        //     'name' => 'required|string|min:10',
-        //     'article' => 'required|string|unique:products,article'. $product->id,
-        //     'status' => 'required|string|in:available,unavailable',
-        //     'attribute_name.*' => 'string|required_with:attribute_value.*',
-        //     'attribute_value.*' => 'string|required_with:attribute_name.*',
-        // ]);
+        
         $validatedData = $request->validate([
                 'name' => 'required|string|min:10',
                 'article' => 'required|string|unique:products,article,' . $product->id,
@@ -109,7 +116,9 @@ class ProductController extends Controller
             'updated_at' => Carbon::now(),
         ]);
 
-        return redirect()->route('products.show', $product);
+        return redirect()
+            ->route('products.show', $product)
+            ->with('alert', 'Product updated success');
     }
 
     /**
@@ -119,7 +128,9 @@ class ProductController extends Controller
     {
         $product->delete();
 
-        return redirect()->route('products.index');
+        return redirect()
+            ->route('products.index')
+            ->with('alert', 'Product deleted success');
 
     }
 }

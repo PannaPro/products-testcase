@@ -7,6 +7,13 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div>
+                @if( session('alert'))
+                    <div>
+                        {{ session('alert') }}
+                    </div>
+                @endif
+            </div>
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 text-2xl">
                     <x-primary-button class="ms-6">
@@ -16,6 +23,7 @@
                 <div class="p-6">
                     <form action="{{ route('products.store') }}" method="POST">
                         @csrf
+                        @method('POST')
                         <div class="mb-4">
                             <label for="article" class="block text-sm font-medium text-gray-700">Article</label>
                             <div class="flex items-center">
@@ -55,18 +63,26 @@
                                 </div>
                             </div>                                                       
                         </div>
+                        @if ($errors->any())
+                            <div class="p-6 text-sm text-red-600">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
                         <div class="mb-4">
                             <label for="attribute" class="block text-sm font-medium text-gray-700">Product attributes</label>
                             <div class="flex items-center">
                                 <input type="text" name="attribute_name[]"
                                 class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-1/2 sm:text-sm border-gray-300 rounded-md"
-                                placeholder="Parameter name" required value="{{ old('attribute_name')[0] ?? '' }}">
+                                placeholder="Parameter name" value="{{ old('attribute_name')[0] ?? '' }}">
                                 <input type="text" name="attribute_value[]"
                                 class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-1/2 sm:text-sm border-gray-300 rounded-md ml-2"
-                                placeholder="Parameter value" required value="{{ old('attribute_value')[0] ?? '' }}">
+                                placeholder="Parameter value" value="{{ old('attribute_value')[0] ?? '' }}">
                                 <button type="button" class="px-2 py-1 bg-red-500 text-white rounded-md ml-2" onclick="this.parentNode.remove()">Remove</button>
                             </div>
-                            
                             <div id="attribute">
                                 <!-- Additional attributes will be added from JS here -->
                             </div>

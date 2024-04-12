@@ -7,12 +7,13 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="flex justify-between items-center p-6 text-gray-900 text-2xl">
                     <x-primary-button class="ms-6">
                         <a href="{{ url()->previous() }}">{{ __('Back') }}</a>
                     </x-primary-button>
-                
+                    
                     <form action="{{ route('products.destroy', $product) }}" method="POST" class="inline">
                         @csrf
                         @method('DELETE')
@@ -24,17 +25,29 @@
                     <form action="{{ route('products.update', $product) }}" method="POST">
                         @csrf
                         @method('PUT')
+
                         <div class="mb-4">
                             <label for="article" class="block text-sm font-medium text-gray-700">Article</label>
                             <div class="flex items-center">
-                                <input type="text" name="article" id="article"
-                                    class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                                    placeholder="Enter article" required value="{{ $product->article }}">
+                                @if(auth()->user()->can('edit article'))
+                                    <input type="text" name="article" id="article"
+                                        class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                        placeholder="Enter article" required
+                                        value="{{ $product->article }}">
+                                @else
+                                    <input type="text" name="article" id="article"
+                                        class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                        placeholder="Enter article" required
+                                        style="pointer-events: none; background-color: #f3f4f6;"
+                                        value="{{ $product->article }}">
+                                @endif
                             </div>
                             @error('article')
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
+                                            
+                        
                         <div class="mb-4">
                             <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
                             <div class="mt-1">

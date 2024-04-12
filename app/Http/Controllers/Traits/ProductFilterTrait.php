@@ -14,7 +14,7 @@ trait ProductFilterTrait
             case 'unavailable':
                 return Product::unavailable()->paginate(10);
             default:
-                return Product::paginate(10);
+                return Product::query()->paginate(10);
         }
     }
 }

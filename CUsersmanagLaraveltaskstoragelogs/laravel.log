@@ -1,4 +1,0 @@
-[2024-04-09 12:45:35] local.ERROR: Trait "App\Http\Traits\ProductFilterTrait" not found {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Trait \"App\\Http\\Traits\\ProductFilterTrait\" not found at /var/www/app/Http/Controllers/ProductController.php:9)
-[stacktrace]
-#0 {main}
-"} 
