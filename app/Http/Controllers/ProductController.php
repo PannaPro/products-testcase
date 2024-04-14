@@ -70,7 +70,8 @@ class ProductController extends Controller
         $emailAdress = Config::get('products.email.default_email');
 
         // send notification to transmitted email
-        Notification::route('mail', $emailAdress)->notify(new SendProductCreatedMailNotification($created));
+        
+        // Notification::route('mail', $emailAdress)->notify(new SendProductCreatedMailNotification($created));
 
         return redirect()
             ->route('products.index')
